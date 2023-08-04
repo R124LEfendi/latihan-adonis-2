@@ -1,13 +1,20 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import User from 'App/Models/User'
-
-
+import Hash from '@ioc:Adonis/Core/Hash'
 export default class AuthController {
 
   async register({ request, response, auth }: HttpContextContract) {
     try {
       //get value from request body
       const { email, password } = request.body()
+
+      const oldUser = await User.query().where({ email: email }).first()
+      if (oldUser) {
+        return response.status(422).json({
+          message: 'Email sudah terdaftar! ',
+        })
+      }
+
       //create user
       const user = await User.create({ email, password })
 
@@ -26,23 +33,34 @@ export default class AuthController {
   };
 
 
-  async login({ request, response, auth }: HttpContextContract) {
-    try {
-      //get value from request body
-      const { email, password } = request.body()
-      //create user
+  public async login({ request, response, auth }: HttpContextContract) {
+    //get req body
+    const { email, password } = request.body()
 
-      //get token
-      const token = await auth.use('api').attempt(email, password)
-      //return detail
-      return {
-        user: token.user,
+    //get user by email
+    const user = await User.query().where({ email: email }).first()
+    if (!user)
+      return response.status(422).json({
+        message: 'email sudah terdaftar'
+      })
+
+    //check password
+    if (!(await Hash.verify(user.password, password))) {
+      return response.status(422).json({
+        message: 'password salah'
+      })
+    }
+
+    //api token
+    const token = await auth.use('api').attempt(email, password)
+
+
+    //return
+    return response.json({
+      data: {
+
+        token: token
       }
-
-    }
-    catch (error) {
-      response.unauthorized('tidak mampu login')
-
-    }
+    })
   }
 }

@@ -10,6 +10,10 @@ export default class User extends BaseModel {
 
   @column({ serializeAs: null })
   public password: string
+  public static rules = {
+    email: 'required|email|unique:users,email', // <-- Tambahkan "unique" disini
+    password: 'required',
+  }
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
