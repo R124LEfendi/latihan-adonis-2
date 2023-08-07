@@ -52,13 +52,13 @@ export default class AuthController {
     }
 
     //api token
-    const token = await auth.use('api').attempt(email, password)
+    const token = await auth.use('api').generate(user)
 
 
     //return
     return response.json({
       data: {
-
+        user: user,
         token: token
       }
     })
