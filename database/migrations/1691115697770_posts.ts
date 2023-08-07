@@ -7,18 +7,18 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.increments('id').primary()
       table.string('title')
-      table.integer('category_id').unsigned().references('categories.id').onDelete('CASCADE')
+      table
+        .integer('category_id')
+        .unsigned()
+        .references('categories.id')
+        .onDelete('CASCADE')
         .onUpdate('RESTRICT')
-
-
-
-
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
        */
-      table.timestamp('created_at', { useTz: true })
-      table.timestamp('updated_at', { useTz: true })
+      table.timestamp('created_at', { useTz: true }).defaultTo(this.now())
+      table.timestamp('updated_at', { useTz: true }).defaultTo(this.now())
     })
   }
 

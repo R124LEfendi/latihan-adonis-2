@@ -15,7 +15,6 @@ export default class Post extends BaseModel {
   @belongsTo(() => Category)
   public category: BelongsTo<typeof Category>
 
-
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 
