@@ -1,5 +1,6 @@
 {
   "extends": "adonis-preset-ts/tsconfig.json",
+  "experimentalDecorators": true,
   "include": [
     "**/*"
   ],
