@@ -20,17 +20,21 @@ export default class AuthController {
 
       // Get token for the new user
       const token = await auth.use('api').attempt(email, password)
+      response.redirect(`/`)
 
       // Return user and token details
       return {
         user,
         token,
       }
+
     } catch (error) {
       // Handle errors properly
       console.log(error)
       return response.unauthorized('Terjadi kesalahan saat mencoba mendaftar.')
     }
+
+
   }
 
   public async login({ request, response, auth }: HttpContextContract) {
@@ -53,6 +57,7 @@ export default class AuthController {
 
     //api token
     const token = await auth.use('api').generate(user)
+    response.redirect(`/`)
 
     //return
     return response.json({

@@ -13,7 +13,7 @@ export default class AuthMiddleware {
   /**
    * The URL to redirect to when request is Unauthorized
    */
-  protected redirectTo = '/login'
+  protected redirectTo = '/home'
 
   /**
    * Authenticates the current HTTP request against a custom set of defined
@@ -60,8 +60,8 @@ export default class AuthMiddleware {
   /**
    * Handle request
    */
-  public async handle (
-    { auth }: HttpContextContract,
+  public async handle(
+    { auth, response }: HttpContextContract,
     next: () => Promise<void>,
     customGuards: (keyof GuardsList)[]
   ) {
@@ -70,7 +70,11 @@ export default class AuthMiddleware {
      * the config file
      */
     const guards = customGuards.length ? customGuards : [auth.name]
-    await this.authenticate(auth, guards)
-    await next()
+    if (await this.authenticate(auth, guards)) {
+      await next();
+    }
+    else {
+      return response.redirect(this.redirectTo)
+    }
   }
 }
